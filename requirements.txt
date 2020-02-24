@@ -1,0 +1,4 @@
+networkx
+node2vec
+sklearn
+python-louvain
