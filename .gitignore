@@ -2,8 +2,10 @@
 *.pdf
 *.svg
 
-# Any created txts
-*.txt
+# Any data txts
+edgelist.tx
+commlabels.txt
+community-identification.txt
 
 # Notebook for dev
 *.ipynb
