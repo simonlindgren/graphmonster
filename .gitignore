@@ -2,10 +2,10 @@
 *.pdf
 *.svg
 
-# Any data txts
-edgelist.txt
-commlabels.txt
-community-identification.txt
+# Any txts
+*.txt
+# except
+!requirements.txt
 
 # Notebook for dev
 *.ipynb
