@@ -1,0 +1,16 @@
+# Any created graphics
+*.pdf
+*.svg
+
+# Any created txts
+*.txt
+
+# Notebook for dev
+*.ipynb
+*.ipynb_checkpoints
+
+# My own credentials
+my_credentials.py
+
+# Cache
+__pycache__/
