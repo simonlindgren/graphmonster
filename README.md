@@ -12,7 +12,7 @@ A valid set of Twitter api credentials must be inserted into `credentials.py`.
 python gm.py -f <parameters>
 ```
 
-Parameters:
+### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
