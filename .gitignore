@@ -3,7 +3,7 @@
 *.svg
 
 # Any data txts
-edgelist.tx
+edgelist.txt
 commlabels.txt
 community-identification.txt
 
