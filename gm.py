@@ -12,6 +12,9 @@ import matplotlib.patches as mpatches
 import community
 import random
 import tweepy
+import seaborn as sns
+
+sns.set_style('whitegrid')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
@@ -21,6 +24,7 @@ parser.add_argument("-n", "--num", default=10)
 parser.add_argument("-w", "--win", default = 10)
 parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
+parser.add_argument("-i", "--iters", default=10000)
 parser.add_argument("-x", "--perp", default = 40)
 args = parser.parse_args()
 
@@ -42,7 +46,7 @@ def main():
     graphcrunch(args.file)
     louvain(args.keep)
     node2vec(args.length,args.num,args.pparam,args.qparam,args.win)
-    t_sne(args.perp)
+    t_sne(args.perp,args.iters)
     colourise()
     label()
     twittergrab()
@@ -110,18 +114,18 @@ def louvain(keep):
 
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
-    print("----- Generating walks ...")
+    print("----- Generating walks")
     node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=15, p=float(pparam), q=float(qparam), quiet=True)
-    print("----- Learning embeddings ...")
+    print("----- Learning embeddings")
     global model
     model = node2vec.fit(window=int(win), min_count=1)
     
-def t_sne(perp):
+def t_sne(perp,iters):
     print("\n- t_sne function")
     print("----- Reducing dimensional space (t-SNE) ...")
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
-    tsne = TSNE(n_components=2, perplexity=int(perp))
+    tsne = TSNE(n_components=2, early_exaggeration=40, n_iter=int(iters), perplexity=int(perp))
     global embeddings_2d
     embeddings_2d = tsne.fit_transform(embeddings)
        
@@ -143,13 +147,17 @@ def colourise():
     colours = df.colour
     
 def label():
+    print("\n- label function")
+    print("----- prepare labelling file")
     # a dict of comm labels and colour
     with open("commlabels.txt", "w") as labelfile:
         labelfile.write("community;community_label\n")
-        for comm in keepcomms:
-            labelfile.write(str(comm) + ";\n")
+        for c,comm in enumerate(keepcomms):
+            labelfile.write(str(comm) + "; label-" + str(c) + "\n")
     
 def twittergrab():
+    print("\n- twittergrab function")
+    
     # add a degree column to the df
     degrees = []
     for n in G.nodes():
@@ -164,7 +172,7 @@ def twittergrab():
     api = tweepy.API(auth)
     
     # get top 10 users by degree in each community
-    print("api call...")
+    print("----- Making api call ...")
     with open("community-identification.txt", "w") as outfile:
         for kc in keepcomms:
             comm_df = df[df['community'] == kc].sort_values(by="degree", ascending=False)
@@ -182,7 +190,7 @@ def twittergrab():
                 outfile.write("description: " + u.description + "\n\n" + "--\n")
 
 def manualbreak():
-    x = input("Make manual edits, press enter to continue:")
+    x = input("\nMake manual edits, press enter to continue:")
     commlabels = pd.read_csv("commlabels.txt", sep=";")
     global df
     df = pd.merge(df,commlabels,on="community")

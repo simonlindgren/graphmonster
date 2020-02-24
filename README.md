@@ -41,3 +41,4 @@ _Node2Vec_
 _t-sne_
 
 `-x`, `--perp`, perplexity for t-sne, recommended 1-50, default = 40.
+`-i`, `--iters`, number of iterations, default 10000.
