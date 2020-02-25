@@ -10,7 +10,7 @@ Run the following command to install package dependencies:
 pip install -r requirements.txt
 ```
 
-A valid set of Twitter api credentials must be inserted into `credentials.py`.
+A valid set of Twitter api credentials must be provided in a python file formatted as `credentials.py`.
 
 ### Usage
 
@@ -21,14 +21,13 @@ python gm.py <parameters>
 ### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
+`-c`, `--creds`, name of Twitter credentials file, default = credentials.py
 
 
 
 _Clustering_
 
 `-k`, `--keep`, max number of communities to keep, default = 8.
-
-`--im`, set this flag to use infomap clustering instead of the default Louvain
 
 _Node2Vec_
 
