@@ -2,13 +2,6 @@
 
 Graphmonster will take an edgelist of twitter-ids, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and T-SNE for reducing dimensionality. Nodes are coloured by community (Infomap algorithm) and sized by degree. Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`, which consists of user info that is retrieved from the Twitter API.
 
-### Prerequisites
-
-Run the following command to install package dependencies:
-
-```
-pip install -r requirements.txt
-```
 
 A valid set of Twitter api credentials must be provided in a python file formatted as `credentials.py`.
 
@@ -46,3 +39,11 @@ _t-sne_
 
 `-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 40.
 `-i`, `--iters`, number of iterations, default 10000 (min 250).
+
+### Prerequisites
+
+Run the following command to install package dependencies:
+
+```
+pip install -r requirements.txt
+```
