@@ -17,6 +17,7 @@ A valid set of Twitter api credentials must be provided in a python file formatt
 ```
 python gm.py <parameters>
 ```
+Files for the visualisation(`gm.svg` and `gm.pdf`) and data on the most prominent nodes (`gm.csv`) will be created.
 
 ### Parameters
 
