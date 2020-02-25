@@ -24,7 +24,7 @@ _Node2Vec_
 
 `-l`, `--length`, walk length, default = 5. 
 
-`-n`, `--num`, number of walks per node, default = 10.
+`-n`, `--num`, number of walks per node, default = 16.
 
 `-w`, `--win`, window for model, default = 10.
 
@@ -34,7 +34,7 @@ _Node2Vec_
 
 _t-sne_
 
-`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 40.
+`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 30.
 `-i`, `--iters`, number of iterations, default 10000 (min 250).
 
 ### Prerequisites
