@@ -4,6 +4,9 @@
 *.csv
 *.txt
 
+# Local edited version
+gmx.py
+
 # except
 !requirements.txt
 

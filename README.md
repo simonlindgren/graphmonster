@@ -12,9 +12,6 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) and data on the most prominen
 ### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
-`-c`, `--creds`, name of Twitter credentials file, default = credentials.py
-
-
 
 _Clustering_
 
@@ -45,4 +42,4 @@ Run the following command to install package dependencies:
 pip install -r requirements.txt
 ```
 
-A valid set of Twitter api credentials must be provided in a python file formatted as `credentials.py`.
+A valid set of Twitter api credentials must be provided in `credentials.py`.

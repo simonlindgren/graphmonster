@@ -16,7 +16,6 @@ sns.set_style('whitegrid')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
-parser.add_argument("-c", "--creds", default = "credentials.py")
 parser.add_argument("-k", "--keep", default = 8)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
@@ -95,23 +94,21 @@ def graphcrunch(file):
     print("----- Renaming nodes")
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
-    print("graph has " + str(len(G.nodes())))
     
 def infomap_clu(G):
+    print("\n- infomap_clu function")
     """
     Partition network with the Infomap algorithm.
     Annotates nodes with 'community' id and return number of communities found.
     """
     infomapX = infomap.Infomap("--two-level --silent")
 
-    print("Building Infomap network from a NetworkX graph...")
+    print("----- Building Infomap network")
     for e in G.edges():
         infomapX.network().addLink(*e)
 
-    print("Find communities with Infomap...")
+    print("----- Finding communities")
     infomapX.run();
-
-    print("Found {} modules with codelength: {}".format(infomapX.numTopModules(), infomapX.codelength()))
 
     communities = {}
     for node in infomapX.iterLeafNodes():
@@ -121,6 +118,7 @@ def infomap_clu(G):
     return G
 
 def communityrip(G,keep):
+    print("\n- communityrip function")
     communities = []
     for n,d in G.nodes(data=True):
         communities.append(d['community'])
@@ -136,7 +134,7 @@ def communityrip(G,keep):
     G.remove_nodes_from(removenodes)
     after = len(G.nodes)
     percentage = round(100*(before-after)/before)
-    print("----- "+ str(after) + " nodes of " + str(before) + " node kept (" + str(percentage) + "% removed)")
+    print("----- "+ str(after) + " of " + str(before) + " nodes kept (" + str(percentage) + "% removed)")
     return G
 
 def node2vec(walk,num,pparam,qparam,win):
@@ -157,7 +155,8 @@ def t_sne(perp,iters):
     embeddings_2d = tsne.fit_transform(embeddings)
        
 def colourise(keep):
-        
+
+    print("\n- colourise function")
    
     # first create a community to colour dict
     desired_length = len(keepcomms)
@@ -197,7 +196,7 @@ def label():
             labelfile.write(str(comm) + ";label" + str(c) + "\n")
     
 def twittergrab(G):
-    
+    print("\n- twittergrab function")
     # Prepare a dataframe
     names = []
     communities = []
@@ -211,7 +210,14 @@ def twittergrab(G):
     global nodes_df    
     nodes_df = pd.DataFrame(zip(names,communities,degrees,colours), columns=['name','community','degree','colour'])
     
-    # call up twitter api 
+    
+    
+    
+    
+    # call up twitter api
+    
+    import importlib
+    
     from credentials import consumer_key, consumer_secret, access_token_secret, access_token
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
