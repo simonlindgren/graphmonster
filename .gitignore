@@ -1,18 +1,18 @@
-# Any created graphics
+# Any graphmonster input/output files
 *.pdf
 *.svg
-
-# Any txts
+*.csv
 *.txt
+
 # except
 !requirements.txt
 
-# Notebook for dev
+# Notebooks for dev
 *.ipynb
 *.ipynb_checkpoints
 
 # My own credentials
-my_credentials.py
+my_creds.py
 
 # Cache
 __pycache__/

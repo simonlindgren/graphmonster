@@ -1,6 +1,6 @@
 # GRAPHMONSTER
 
-Graphmonster will take an edgelist of twitter-ids, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and T-SNE for reducing dimensionality. Nodes are coloured by community (Louvain algorithm) and sized by degree. Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`.
+Graphmonster will take an edgelist of twitter-ids, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and T-SNE for reducing dimensionality. Nodes are coloured by community (Infomap algorithm) and sized by degree. Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`, which consists of user info that is retrieved from the Twitter API.
 
 ### Prerequisites
 
@@ -15,16 +15,20 @@ A valid set of Twitter api credentials must be inserted into `credentials.py`.
 ### Usage
 
 ```
-python gm.py -f <parameters>
+python gm.py <parameters>
 ```
 
 ### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-_Louvain_
+
+
+_Clustering_
 
 `-k`, `--keep`, max number of communities to keep, default = 8.
+
+`--im`, set this flag to use infomap clustering instead of the default Louvain
 
 _Node2Vec_
 
@@ -41,4 +45,4 @@ _Node2Vec_
 _t-sne_
 
 `-x`, `--perp`, perplexity for t-sne, recommended 1-50, default = 40.
-`-i`, `--iters`, number of iterations, default 10000.
+`-i`, `--iters`, number of iterations, default 10000 (min 250).
