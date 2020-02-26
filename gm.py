@@ -210,14 +210,6 @@ def twittergrab(G):
     global nodes_df    
     nodes_df = pd.DataFrame(zip(names,communities,degrees,colours), columns=['name','community','degree','colour'])
     
-    
-    
-    
-    
-    # call up twitter api
-    
-    import importlib
-    
     from credentials import consumer_key, consumer_secret, access_token_secret, access_token
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
