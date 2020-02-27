@@ -35,6 +35,7 @@ _t-sne_
 
 `-i`, `--iters`, number of iterations, default 10000 (min 250).
 
+---
 
 #### Twittergrab function
 If your edgelist consists of Twitter user id numbers, you can use the twittergrab function. After running graphmonster (which will output a file named `gm.csv`), run:
@@ -47,6 +48,7 @@ Twittergrabber will read the csv, call up the Twitter API, and get profile data 
 
 A valid set of Twitter api credentials must be provided in `credentials.py`.
 
+---
 
 ### Prerequisites
 
