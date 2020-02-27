@@ -3,6 +3,7 @@
 import networkx as nx
 from node2vec import Node2Vec
 import numpy as np
+from numpy import savetxt
 from sklearn.manifold import TSNE
 import argparse
 import pandas as pd
@@ -16,14 +17,16 @@ sns.set_style('whitegrid')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
-parser.add_argument("-k", "--keep", default = 8)
+parser.add_argument("-k", "--keep", default = 20)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
 parser.add_argument("-w", "--win", default = 10)
 parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=10000)
-parser.add_argument("-x", "--perp", default = 30)
+parser.add_argument("-x", "--perp", default = 20)
+parser.add_argument("--tw", default=False, action="store_true")
+
 args = parser.parse_args()
 
 logo='''
@@ -47,9 +50,8 @@ def main():
     node2vec(args.length,args.num,args.pparam,args.qparam,args.win)
     t_sne(args.perp,args.iters)
     colourise(args.keep)
-    label()
-    twittergrab(G)
-    manualbreak()
+    if args.tw == True:
+        twittergrab(G)
     visualise()
     print("")
     print("Done!")
@@ -150,66 +152,68 @@ def t_sne(perp,iters):
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
-    tsne = TSNE(n_components=2, early_exaggeration=40, n_iter=int(iters), perplexity=int(perp))
+    tsne = TSNE(n_components=2, n_iter=int(iters), perplexity=int(perp))
     global embeddings_2d
     embeddings_2d = tsne.fit_transform(embeddings)
+    savetxt('embeddings_2d.csv', embeddings_2d, delimiter=',')
        
 def colourise(keep):
-
     print("\n- colourise function")
-   
-    # first create a community to colour dict
-    desired_length = len(keepcomms)
     nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700']
-    #nice_colours = ['b','g','r','darkorange','hotpink','aquamarine','darkviolet','deepskyblue','lightpink','gold']
     boring_colour = '#c0c0c0' # silver
     
-
-    if int(keep) > 11:
-        commcolours = nice_colours[:int(keep)]
-            
+    if len(keepcomms) < 11:
+        clu_colours = dict(zip(keepcomms,nice_colours[:len(keepcomms)]))
     else:
-        commcolours = nice_colours
-        num_restcolours = desired_length - int(keep)
-        restcolours = []
-        for i in range(num_restcolours):
-            commcolours.append(boring_colour)
+        taillength = len(keepcomms) - 10
+        tail = []
+        for i in range(taillength):
+            tail.append(boring_colour)
+        colz = nice_colours + tail
+        clu_colours = dict(zip(keepcomms,colz))
     
-    colourdict = dict(zip(keepcomms,commcolours))
+    # df of nodes, names and clusters
+    nodz = []
+    names = []
+    clus = []
+    for n,d in G.nodes(data=True):
+        nodz.append(n)
+        names.append(d['name'])
+        clus.append(d['community'])
+        
+    df1 = pd.DataFrame(zip(nodz,names,clus), columns = ['node','name','community'])
     
-    # create a list of colour by node
+    
+    # A df of cluster colours
+    df2 = pd.DataFrame(clu_colours, index = [0]).T.reset_index()
+    df2.columns=["community", "colour"]
+    
+    
+    # Join them
+    global df3
+    df3 = pd.merge(df1,df2, on="community")
+    df3['degree'] = G.degree()
+    
+    colourdict = dict(zip(df3.node,df3.colour))
+
+    #nodes = [n for n in G.nodes()] # get the order right here!
+    nodes = [n for n in model.wv.vocab]
     global colours
     colours = []
-    for n,d in G.nodes(data=True):
-        if colourdict.get(d['community']) == None:
-            colours.append(boring_colour)
-        else:
-            colours.append(colourdict.get(d['community']))
+    
+    for n in nodes:
+        colours.append(colourdict.get(int(n)))
 
-def label():
-    print("\n- label function")
-    print("----- prepare labelling file")
+def twittergrab(G):
+    
+    print("\n- twittergrab function")
+   
     # a dict of comm labels and colour
     with open("commlabels.txt", "w") as labelfile:
         labelfile.write("community;community_label\n")
         for c,comm in enumerate(keepcomms):
             labelfile.write(str(comm) + ";label" + str(c) + "\n")
-    
-def twittergrab(G):
-    print("\n- twittergrab function")
-    # Prepare a dataframe
-    names = []
-    communities = []
-    degrees = []
-    
-    for n,d in G.nodes(data=True):
-        names.append(d['name'])
-        communities.append(d['community'])
-        degrees.append(G.degree(n))
-    
-    global nodes_df    
-    nodes_df = pd.DataFrame(zip(names,communities,degrees,colours), columns=['name','community','degree','colour'])
-    
+        
     from credentials import consumer_key, consumer_secret, access_token_secret, access_token
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -220,11 +224,11 @@ def twittergrab(G):
     print("----- Making api call ...")
     with open("community-identification.txt", "w") as outfile:
         for kc in keepcomms:
-            comm_df = nodes_df[nodes_df['community'] == kc].sort_values(by="degree", ascending=False)
+            comm_df = df3[df3['community'] == kc].sort_values(by="degree", ascending=False)
             topnames = list(comm_df['name'][:10])  
             users = api.lookup_users(topnames)
 
-            degree_dict = dict(zip(nodes_df.name,nodes_df.degree))
+            degree_dict = dict(zip(df3.name,df3.degree))
 
             outfile.write("Community " + str(kc) + "\n" + "="*40)
             for c,u in enumerate(users):
@@ -233,17 +237,17 @@ def twittergrab(G):
                 outfile.write("screen_name: " + u.screen_name + "\n")
                 outfile.write("description: " + u.description + "\n\n" + "--\n")
                 
-def manualbreak():
     x = input("\nMake manual edits, press enter to continue:")
+    
+                
+def visualise():
     commlabels_df = pd.read_csv("commlabels.txt", sep=";")
     global full_df
-    full_df = pd.merge(nodes_df,commlabels_df,on="community")
-    full_df = full_df.sort_values(by="degree", ascending=False).head(100)
+    full_df = pd.merge(commlabels_df, df3, on="community")
+    full_df = full_df.sort_values(by="degree", ascending=False)
     full_df.to_csv("gm.csv")
-                
-                
-             
-def visualise():
+
+    
     print("\n- visualise function")
     print("----- Saving graph as pdf and svg")
     # Size by degree
@@ -252,21 +256,16 @@ def visualise():
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
-    
-    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree*5, alpha=0.6, c=colours)
+    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree*5, alpha=0.2, c=colours)
 
-    # Legend
-    legend_labels = [mpatches.Patch(color=colour, label=community_label) for community_label,colour in dict(zip(full_df.community_label,full_df.colour)).items()]
-    ax.legend(handles=legend_labels)
     
-    
-    
+    if args.tw == True:
+        # Legend
+        legend_labels = [mpatches.Patch(color=colour, label=community_label) for community_label,colour in dict(zip(full_df.community_label,full_df.colour)).items()]
+        ax.legend(handles=legend_labels)
 
     figure.savefig("gm.pdf", bbox_inches='tight')
     figure.savefig("gm.svg")
     
-
-
-
 if __name__ == '__main__':
     main()
