@@ -43,7 +43,7 @@ If your edgelist consists of Twitter user id numbers, you can use the twittergra
 python gm_tw.py
 ```
 
-Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`. Inspect that file and enter community labels manually by editing `commlabels.txt`. Set the number of communities to look up with the `-n` flag (default = 10), and use `-f` to use any other filename than the default (`gm.csv`).
+Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`. Inspect that file and enter community labels manually by editing `commlabels.txt`. Set the number of communities to look up with the `-n` flag (default = 10), and set `-f` to use any other filename than the default (`gm.csv`).
 
 A valid set of Twitter api credentials must be provided in `credentials.py`.
 
