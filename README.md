@@ -13,10 +13,10 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) and data on the most prominen
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-`--tw`, set this flag to activate the twittergrab function. Do this only if your edgelist consists of Twitter user id numbers.
+`--tw`, set this flag to activate the twittergrab function.
 
 #### Twittergrab
-Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`, which consists of user info that is retrieved from the Twitter API.
+Activate this function only if your edgelist consists of Twitter user id numbers. Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`, which consists of user info that is retrieved from the Twitter API.
 
 
 _Clustering_
