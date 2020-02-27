@@ -25,7 +25,6 @@ parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=10000)
 parser.add_argument("-x", "--perp", default = 20)
-parser.add_argument("--tw", default=False, action="store_true")
 
 args = parser.parse_args()
 
@@ -50,8 +49,6 @@ def main():
     node2vec(args.length,args.num,args.pparam,args.qparam,args.win)
     t_sne(args.perp,args.iters)
     colourise(args.keep)
-    if args.tw == True:
-        twittergrab(G)
     visualise()
     print("")
     print("Done!")
@@ -74,17 +71,18 @@ def graphcrunch(file):
             else:
                 G.add_edge(s,t,weight = 1)
     G.remove_edges_from(nx.selfloop_edges(G))
+    print(nx.info(G))
     
-    print("----- Removing edges by threshold")
-    threshold = 2
+    #print("----- Removing edges by threshold")
+    #threshold = 2
 
-    while len(G.edges()) > 1000000:
-        removeedges = []
-        for s,t,data in G.edges(data=True):
-            if data['weight'] < threshold:
-                removeedges.append((s,t))
-        G.remove_edges_from(removeedges)
-        threshold += 1
+    #while len(G.edges()) > 1000000:
+    #    removeedges = []
+    #    for s,t,data in G.edges(data=True):
+    #        if data['weight'] < threshold:
+    #            removeedges.append((s,t))
+    #    G.remove_edges_from(removeedges)
+    #    threshold += 1
     
     print("----- Deleting unconnected components")
     giant_component_size = len(sorted(nx.connected_components(G), key=len, reverse=True)[0])
@@ -92,7 +90,7 @@ def graphcrunch(file):
         if len(component)<giant_component_size:
             for node in component:
                 G.remove_node(node)
-    
+    print(nx.info(G))    
     print("----- Renaming nodes")
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
@@ -142,7 +140,7 @@ def communityrip(G,keep):
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
-    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=15, p=float(pparam), q=float(qparam), quiet=True)
+    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=15, p=float(pparam), q=float(qparam), quiet=False)
     print("----- Learning embeddings")
     global model
     model = node2vec.fit(window=int(win), min_count=1)
@@ -204,42 +202,6 @@ def colourise(keep):
     for n in nodes:
         colours.append(colourdict.get(int(n)))
 
-def twittergrab(G):
-    
-    print("\n- twittergrab function")
-   
-    # a dict of comm labels and colour
-    with open("commlabels.txt", "w") as labelfile:
-        labelfile.write("community;community_label\n")
-        for c,comm in enumerate(keepcomms):
-            labelfile.write(str(comm) + ";label" + str(c) + "\n")
-        
-    from credentials import consumer_key, consumer_secret, access_token_secret, access_token
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
-    
-     # get top 10 users by degree in each community
-    print("----- Making api call ...")
-    with open("community-identification.txt", "w") as outfile:
-        for kc in keepcomms:
-            comm_df = df3[df3['community'] == kc].sort_values(by="degree", ascending=False)
-            topnames = list(comm_df['name'][:10])  
-            users = api.lookup_users(topnames)
-
-            degree_dict = dict(zip(df3.name,df3.degree))
-
-            outfile.write("Community " + str(kc) + "\n" + "="*40)
-            for c,u in enumerate(users):
-                outfile.write("\n" + str(c+1) + " -- degree:" + str(degree_dict[topnames[c]])+"\n")
-                outfile.write("user: " + u.name + "\n")
-                outfile.write("screen_name: " + u.screen_name + "\n")
-                outfile.write("description: " + u.description + "\n\n" + "--\n")
-                
-    x = input("\nMake manual edits, press enter to continue:")
-    
-                
 def visualise():
     commlabels_df = pd.read_csv("commlabels.txt", sep=";")
     global full_df
@@ -257,13 +219,7 @@ def visualise():
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree*5, alpha=0.2, c=colours)
-
-    
-    if args.tw == True:
-        # Legend
-        legend_labels = [mpatches.Patch(color=colour, label=community_label) for community_label,colour in dict(zip(full_df.community_label,full_df.colour)).items()]
-        ax.legend(handles=legend_labels)
-
+  
     figure.savefig("gm.pdf", bbox_inches='tight')
     figure.savefig("gm.svg")
     

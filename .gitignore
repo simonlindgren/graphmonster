@@ -4,8 +4,8 @@
 *.csv
 *.txt
 
-# Local edited version
-gmx.py
+# Local and personal  edited version of gm_tg file 
+gm_tgx.py
 
 # except
 !requirements.txt

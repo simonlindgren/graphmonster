@@ -1,6 +1,6 @@
 # GRAPHMONSTER
 
-Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and t-sne for reducing dimensionality. Nodes are coloured by community (Infomap algorithm) and sized by degree.
+Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and t-sne for reducing dimensionality. In the resulting visualised graph, nodes are coloured by community (Infomap algorithm) and sized by degree.
 
 ### Usage
 
@@ -12,12 +12,6 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) and data on the most prominen
 ### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
-
-`--tw`, set this flag to activate the twittergrab function.
-
-#### Twittergrab
-Activate this function only if your edgelist consists of Twitter user id numbers. Before the graph is visualised as a 2D image, the user manually enters cluster labels in `commlabels.txt` by inspecting `community-identification.txt`, which consists of user info that is retrieved from the Twitter API.
-
 
 _Clustering_
 
@@ -40,6 +34,17 @@ _t-sne_
 `-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 20.
 `-i`, `--iters`, number of iterations, default 10000 (min 250).
 
+
+#### Twittergrab function
+If your edgelist consists of Twitter user id numbers, you can use the twittergrab function. After running graphmonster (which will output a file named `gm.csv`), run:
+
+```
+python gm_tw.py
+```
+
+Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`. Inspect that file and enter community labels manually by editing `commlabels.txt`. A valid set of Twitter api credentials must be provided in `credentials.py`.
+
+
 ### Prerequisites
 
 Run the following command to install package dependencies:
@@ -47,5 +52,3 @@ Run the following command to install package dependencies:
 ```
 pip install -r requirements.txt
 ```
-
-A valid set of Twitter api credentials must be provided in `credentials.py` if using the twittergrab function.
