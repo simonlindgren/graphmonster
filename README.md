@@ -48,4 +48,4 @@ Run the following command to install package dependencies:
 pip install -r requirements.txt
 ```
 
-A valid set of Twitter api credentials must be provided in `credentials.py`.
+A valid set of Twitter api credentials must be provided in `credentials.py` if using the twittergrab function.
