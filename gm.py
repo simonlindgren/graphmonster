@@ -5,26 +5,32 @@ from node2vec import Node2Vec
 import numpy as np
 from numpy import savetxt
 from sklearn.manifold import TSNE
-import argparse
+import umap
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import tweepy
 import seaborn as sns
 import infomap
+import pickle
+import argparse
 
 sns.set_style('whitegrid')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
-parser.add_argument("-k", "--keep", default = 20)
+parser.add_argument("-k", "--keep", default = 16)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
 parser.add_argument("-w", "--win", default = 10)
 parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
-parser.add_argument("-i", "--iters", default=10000)
-parser.add_argument("-x", "--perp", default = 20)
+parser.add_argument("-i", "--iters", default=600)
+parser.add_argument("-x", "--perp", default = 10)
+parser.add_argument("--nneigh", default = 10)
+parser.add_argument("-m", "--mind", default = 0.1 )
+parser.add_argument("--mtrc", default = "mahalanobis")
+parser.add_argument("--tsne", default=False, action="store_true")
+
 
 args = parser.parse_args()
 
@@ -47,7 +53,10 @@ def main():
     infomap_clu(G)
     communityrip(G,args.keep)
     node2vec(args.length,args.num,args.pparam,args.qparam,args.win)
-    t_sne(args.perp,args.iters)
+    if args.tsne is True:
+        t_sne(args.perp,args.iters)
+    else:
+        umap_reduction(int(args.nneigh),args.mind,args.mtrc)
     colourise(args.keep)
     visualise()
     print("")
@@ -71,18 +80,16 @@ def graphcrunch(file):
             else:
                 G.add_edge(s,t,weight = 1)
     G.remove_edges_from(nx.selfloop_edges(G))
-    print(nx.info(G))
     
-    #print("----- Removing edges by threshold")
-    #threshold = 2
-
-    #while len(G.edges()) > 1000000:
-    #    removeedges = []
-    #    for s,t,data in G.edges(data=True):
-    #        if data['weight'] < threshold:
-    #            removeedges.append((s,t))
-    #    G.remove_edges_from(removeedges)
-    #    threshold += 1
+    print("----- Removing edges by threshold")
+    threshold = 2
+    while len(G.edges()) > 2000000:
+        removeedges = []
+        for s,t,data in G.edges(data=True):
+            if data['weight'] < threshold:
+                removeedges.append((s,t))
+        G.remove_edges_from(removeedges)
+        threshold += 1
     
     print("----- Deleting unconnected components")
     giant_component_size = len(sorted(nx.connected_components(G), key=len, reverse=True)[0])
@@ -90,7 +97,7 @@ def graphcrunch(file):
         if len(component)<giant_component_size:
             for node in component:
                 G.remove_node(node)
-    print(nx.info(G))    
+   
     print("----- Renaming nodes")
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
@@ -115,8 +122,14 @@ def infomap_clu(G):
         communities[node.physicalId] = node.moduleIndex()
 
     nx.set_node_attributes(G, values=communities, name='community')
-    return G
 
+    # Save graph to disk
+    nx.write_gpickle(G, "gm-graph.pkl")
+    # Save the degree list to disk
+    degree = [G.degree[n] for n in G.nodes()]
+    with open('degrees.pkl', 'wb') as f:
+        pickle.dump(degree, f)
+    
 def communityrip(G,keep):
     print("\n- communityrip function")
     communities = []
@@ -125,6 +138,10 @@ def communityrip(G,keep):
     sizeranked_comms = list(pd.Series(communities).value_counts().index)
     global keepcomms
     keepcomms = sizeranked_comms[:int(keep)]
+    # write keepcomms to disk
+    with open('keepcomms.pkl', 'wb') as f:
+        pickle.dump(keepcomms, f)
+    
     removenodes = []
     for n,d in G.nodes(data=True):
         if not d['community'] in keepcomms:
@@ -135,35 +152,47 @@ def communityrip(G,keep):
     after = len(G.nodes)
     percentage = round(100*(before-after)/before)
     print("----- "+ str(after) + " of " + str(before) + " nodes kept (" + str(percentage) + "% removed)")
-    return G
+       
 
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
-    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=15, p=float(pparam), q=float(qparam), quiet=False)
+    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=10, p=float(pparam), q=float(qparam), quiet=True)
     print("----- Learning embeddings")
     global model
-    model = node2vec.fit(window=int(win), min_count=1)
+    model = node2vec.fit(window=int(win), min_count=1)    
+    # save the model to disk       
+    pickle.dump(model, open("gm-n2v.pkl", 'wb'))     
     
 def t_sne(perp,iters):
-    print("\n- t_sne function")
+    print("\n- t-sne function")
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
     tsne = TSNE(n_components=2, n_iter=int(iters), perplexity=int(perp))
     global embeddings_2d
     embeddings_2d = tsne.fit_transform(embeddings)
-    savetxt('embeddings_2d.csv', embeddings_2d, delimiter=',')
+    savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
        
+def umap_reduction(nneigh,mind,mtrc):
+    print("\n- umap function")
+    print("----- Reducing to 2-dimensional space (umap) ...")
+    nodes = [n for n in model.wv.vocab]
+    embeddings = np.array([model.wv[x] for x in nodes])
+    global embeddings_2d
+    umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric='mahalanobis')
+    embeddings_2d = umap_r.fit_transform(embeddings)
+    savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
+        
 def colourise(keep):
     print("\n- colourise function")
-    nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700']
+    nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700','#000000','#aaffc3','#800000','#bcf60c','#808080','#ffe119']
     boring_colour = '#c0c0c0' # silver
     
-    if len(keepcomms) < 11:
+    if len(keepcomms) < 17:
         clu_colours = dict(zip(keepcomms,nice_colours[:len(keepcomms)]))
     else:
-        taillength = len(keepcomms) - 10
+        taillength = len(keepcomms) - 16
         tail = []
         for i in range(taillength):
             tail.append(boring_colour)
@@ -190,7 +219,10 @@ def colourise(keep):
     # Join them
     global df3
     df3 = pd.merge(df1,df2, on="community")
-    df3['degree'] = G.degree()
+    df3['degree'] = [G.degree[n] for n in G.nodes()]
+    
+    # save data
+    df3.to_csv("gm.csv")
     
     colourdict = dict(zip(df3.node,df3.colour))
 
@@ -203,17 +235,21 @@ def colourise(keep):
         colours.append(colourdict.get(int(n)))
 
 def visualise():
-    commlabels_df = pd.read_csv("commlabels.txt", sep=";")
-    global full_df
-    full_df = pd.merge(commlabels_df, df3, on="community")
-    full_df = full_df.sort_values(by="degree", ascending=False)
-    full_df.to_csv("gm.csv")
+    
+    # Prepare for labelling
+    # a dict of comm labels and colour
+    with open("commlabels.txt", "w") as labelfile:
+        labelfile.write("community;community_label\n")
+        for c,comm in enumerate(keepcomms):
+            labelfile.write(str(comm) + ";label" + str(c) + "\n")
+
 
     
     print("\n- visualise function")
     print("----- Saving graph as pdf and svg")
     # Size by degree
     degree = [G.degree[n] for n in G.nodes()]
+
 
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
