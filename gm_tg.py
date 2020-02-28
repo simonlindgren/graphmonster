@@ -3,6 +3,7 @@
 '''
 GRAPHMONSTER TWITTERGRAB
 '''
+
 from credentials import consumer_key, consumer_secret, access_token_secret, access_token
 import pandas as pd
 import tweepy
@@ -11,28 +12,21 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--file", default = "gm.csv")
-parser.add_argument("-n", "--num", default = 10)
+parser.add_argument("-n", "--num", default = 16)
 
 args = parser.parse_args()
 
 def main():
-    print("Processing csv file ...")
-    twittergrab(args.file,args.num)
-    print("Saved community-identification.txt")
+    print("\n[-=GRAPHMONSTER=-]")
+    print("- twittergrab function")
+    print("----- Processing csv file")
+    twittergrab("gm.csv",args.num)
+    print("----- Saved community-identification.txt\n")
 
 def twittergrab(file,numcomms):
-    
     # Get graphmonster data
     data = pd.read_csv(file)
-    
-    ##
-    # Get degree to save right when gm.py makes the gm.csv, but for now:  
-    degrees = []
-    for i in data.degree:
-        degrees.append(i.split()[1].strip(")"))
-    data['degree'] = degrees    
-    ##    
+      
     
     # Authorise with the Twitter api
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -44,6 +38,7 @@ def twittergrab(file,numcomms):
     keepcomms = sizeranked_comms[:int(numcomms)]
     
     # Make api call
+    print("----- Calling api ...")
     with open("community-identification.txt", "w") as outfile:
         for kc in keepcomms:
             comm_df = data[data['community'] == kc].sort_values(by="degree", ascending=False)
