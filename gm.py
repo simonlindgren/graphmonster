@@ -9,12 +9,9 @@ import umap
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import seaborn as sns
 import infomap
 import pickle
 import argparse
-
-sns.set_style('whitegrid')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
@@ -26,9 +23,9 @@ parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=600)
 parser.add_argument("-x", "--perp", default = 10)
-parser.add_argument("--nneigh", default = 10)
-parser.add_argument("-m", "--mind", default = 0.1 )
-parser.add_argument("--mtrc", default = "mahalanobis")
+parser.add_argument("--nneigh", default = 20)
+parser.add_argument("-m", "--mind", default = 1 )
+parser.add_argument("--mtrc", default = "euclidean")
 parser.add_argument("--tsne", default=False, action="store_true")
 
 
@@ -56,7 +53,7 @@ def main():
     if args.tsne is True:
         t_sne(args.perp,args.iters)
     else:
-        umap_reduction(int(args.nneigh),args.mind,args.mtrc)
+        umap_reduction(int(args.nneigh),float(args.mind),args.mtrc)
     colourise(args.keep)
     visualise()
     print("")
@@ -180,7 +177,7 @@ def umap_reduction(nneigh,mind,mtrc):
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
     global embeddings_2d
-    umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric='mahalanobis')
+    umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric=mtrc)
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
@@ -254,7 +251,7 @@ def visualise():
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
-    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree*5, alpha=0.2, c=colours)
+    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree, alpha=0.6, c=colours)
   
     figure.savefig("gm.pdf", bbox_inches='tight')
     figure.savefig("gm.svg")

@@ -13,7 +13,7 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-`--tsne`. set this flag to use t-sne instead of umap
+`--tsne`, set this flag to use t-sne instead of umap
 
 _Clustering_
 
@@ -33,9 +33,9 @@ _Node2Vec_
 
 _umap_
 
-`-n`, `--nneigh`, similar to perplexity, recommended 5-50, default = 10.
+`-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 10.
 
-`-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 0.1.
+`-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
 
 _t-sne_
 
@@ -52,7 +52,7 @@ If your edgelist consists of Twitter user id numbers, you can use the twittergra
 python gm_tw.py
 ```
 
-Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`. Set the number of communities to look up with the `-n` flag (default = 16).
+Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`.
 
 A valid set of Twitter api credentials must be provided in `credentials.py`.
 
@@ -66,8 +66,9 @@ python gm_rv.py <parameters>
 
 After running the graph creation script (`gm.py`), and possibly the twittergrab script (`gm_tg.py`), the revisualisation script (`gm_rv.py`) can be run iteratively to tweak the visualisation. This may include editing `commlabels.txt`, and alterations of the following parameters:
 
+`-s`, `--size`, nodesize will be (degree * size), default = 1.
 
-
+`-a`, `--alpha`, alpha opacity of nodes, default = 0.6.
 
 ---
 
