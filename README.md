@@ -7,7 +7,7 @@ Graphmonster will take an edgelist, create a graph, and remove noise from it. It
 ```
 python gm.py <parameters>
 ```
-Files for the visualisation(`gm.svg` and `gm.pdf`) and data on the most prominent nodes (`gm.csv`) will be created.
+Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 ### Parameters
 
