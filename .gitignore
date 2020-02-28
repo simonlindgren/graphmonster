@@ -3,6 +3,7 @@
 *.svg
 *.csv
 *.txt
+*.pkl
 
 # Local and personal  edited version of gm_tg file 
 gm_tgx.py
