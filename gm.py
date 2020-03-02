@@ -15,6 +15,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
+parser.add_argument("-t", "--thresh", default = 1000000)
 parser.add_argument("-k", "--keep", default = 16)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
@@ -22,13 +23,11 @@ parser.add_argument("-w", "--win", default = 10)
 parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=600)
-parser.add_argument("-x", "--perp", default = 10)
+parser.add_argument("-x", "--perp", default = 20)
 parser.add_argument("--nneigh", default = 20)
 parser.add_argument("-m", "--mind", default = 1 )
 parser.add_argument("--mtrc", default = "euclidean")
 parser.add_argument("--tsne", default=False, action="store_true")
-
-
 args = parser.parse_args()
 
 logo='''
@@ -77,10 +76,11 @@ def graphcrunch(file):
             else:
                 G.add_edge(s,t,weight = 1)
     G.remove_edges_from(nx.selfloop_edges(G))
+    print("----- Graph has " + str(len(G.edges)) + " edges")
     
-    print("----- Removing edges by threshold")
+    print("----- Removing edges by threshold to keep a maximum of " + str(args.thresh) + " edges")
     threshold = 2
-    while len(G.edges()) > 2000000:
+    while len(G.edges()) > int(args.thresh):
         removeedges = []
         for s,t,data in G.edges(data=True):
             if data['weight'] < threshold:
@@ -154,7 +154,7 @@ def communityrip(G,keep):
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
-    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=10, p=float(pparam), q=float(qparam), quiet=True)
+    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=10, p=float(pparam), q=float(qparam), quiet=True, temp_folder="tempfolder")
     print("----- Learning embeddings")
     global model
     model = node2vec.fit(window=int(win), min_count=1)    

@@ -13,7 +13,9 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-`--tsne`, set this flag to use t-sne instead of umap
+`-t`, `--thresh`, limit for maximum number of edges to keep in the graph (low-weight edges will be removed), default = 1000000.
+
+`--tsne`, set this flag to use t-sne instead of umap.
 
 _Clustering_
 
@@ -33,13 +35,13 @@ _Node2Vec_
 
 _umap_
 
-`-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 10.
+`-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 20.
 
 `-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
 
 _t-sne_
 
-`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 10.
+`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 20.
 
 `-i`, `--iters`, number of iterations, default = 600 (min 250).
 
