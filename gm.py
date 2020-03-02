@@ -109,7 +109,7 @@ def infomap_clu(G):
 
     print("----- Building Infomap network")
     for e in G.edges():
-        infomapX.network().addLink(*e)
+        infomapX.network.addLink(*e)
 
     print("----- Finding communities")
     infomapX.run();
