@@ -13,7 +13,7 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-`-t`, `--thresh`, limit for maximum number of edges to keep in the graph (low-weight edges will be removed), default = 1000000.
+`--mst`, set this flag to extract the minimum spanning tree (useful for large graphs)
 
 `--tsne`, set this flag to use t-sne instead of umap.
 

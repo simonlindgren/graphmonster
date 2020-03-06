@@ -15,7 +15,6 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", default = "edgelist.txt")
-parser.add_argument("-t", "--thresh", default = 1000000)
 parser.add_argument("-k", "--keep", default = 16)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
@@ -28,6 +27,7 @@ parser.add_argument("--nneigh", default = 20)
 parser.add_argument("-m", "--mind", default = 1 )
 parser.add_argument("--mtrc", default = "euclidean")
 parser.add_argument("--tsne", default=False, action="store_true")
+parser.add_argument("--mst", default=False, action="store_true")
 args = parser.parse_args()
 
 logo='''
@@ -78,15 +78,22 @@ def graphcrunch(file):
     G.remove_edges_from(nx.selfloop_edges(G))
     print("----- Graph has " + str(len(G.edges)) + " edges")
     
-    print("----- Removing edges by threshold to keep a maximum of " + str(args.thresh) + " edges")
-    threshold = 2
-    while len(G.edges()) > int(args.thresh):
-        removeedges = []
-        for s,t,data in G.edges(data=True):
-            if data['weight'] < threshold:
-                removeedges.append((s,t))
-        G.remove_edges_from(removeedges)
-        threshold += 1
+    if args.mst is True:    
+        print("----- Extracting minimum spanning tree")
+        G = nx.minimum_spanning_tree(G)
+        print("----- Graph has " + str(len(G.edges)) + " edges")
+
+    if len(G.edges) > 1000000:
+        print("----- Removing edges by threshold")
+        weightlimit = 2
+        while len(G.edges) > 1000000:
+            removeedges=[]
+            for s,t,data in G.edges(data=True):
+                if data['weight'] < weightlimit:
+                    removeedges.append((s,t))
+            G.remove_edges_from(removeedges)
+            weightlimit+=1
+        print("----- Graph has " + str(len(G.edges)) + " edges and " + str(len(G.nodes)) + " nodes")
     
     print("----- Deleting unconnected components")
     giant_component_size = len(sorted(nx.connected_components(G), key=len, reverse=True)[0])
@@ -94,7 +101,8 @@ def graphcrunch(file):
         if len(component)<giant_component_size:
             for node in component:
                 G.remove_node(node)
-   
+    print("----- Graph has " + str(len(G.edges)) + " edges and " + str(len(G.nodes)) + " nodes")
+                  
     print("----- Renaming nodes")
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
@@ -119,13 +127,6 @@ def infomap_clu(G):
         communities[node.physicalId] = node.moduleIndex()
 
     nx.set_node_attributes(G, values=communities, name='community')
-
-    # Save graph to disk
-    nx.write_gpickle(G, "gm-graph.pkl")
-    # Save the degree list to disk
-    degree = [G.degree[n] for n in G.nodes()]
-    with open('degrees.pkl', 'wb') as f:
-        pickle.dump(degree, f)
     
 def communityrip(G,keep):
     print("\n- communityrip function")
@@ -149,12 +150,21 @@ def communityrip(G,keep):
     after = len(G.nodes)
     percentage = round(100*(before-after)/before)
     print("----- "+ str(after) + " of " + str(before) + " nodes kept (" + str(percentage) + "% removed)")
+    print("----- Graph has " + str(len(G.edges)) + " edges and " + str(len(G.nodes)) + " nodes")
        
-
+    # Save graph to disk
+    nx.write_gpickle(G, "gm-graph.pkl")
+    # Save the degree list to disk
+    degree = [G.degree[n] for n in G.nodes()]
+    with open('degrees.pkl', 'wb') as f:
+        pickle.dump(degree, f)
+    print("----- Graph saved\n")
+        
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
-    print("----- Generating walks")
-    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=10, p=float(pparam), q=float(qparam), quiet=True, temp_folder="tempfolder")
+    print("----- Generating walks ...")
+    G = nx.read_gpickle("gm-graph.pkl")
+    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=1, p=float(pparam), q=float(qparam), quiet=False)
     print("----- Learning embeddings")
     global model
     model = node2vec.fit(window=int(win), min_count=1)    
@@ -177,7 +187,7 @@ def umap_reduction(nneigh,mind,mtrc):
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
     global embeddings_2d
-    umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric=mtrc)
+    umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric=mtrc,random_state=2020)
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
