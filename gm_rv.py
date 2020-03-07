@@ -13,7 +13,7 @@ import argparse
 sns.set_style('white')
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--size", default = 2000)
+parser.add_argument("-s", "--size", default = 60)
 parser.add_argument("-a", "--aph", default = 0.6) # alpha
 parser.add_argument("--svg", default=False, action="store_true")
 
@@ -73,7 +73,6 @@ def visualise(size,aph):
     if args.svg is True:
         print("----- Creating svg file")
         figure.savefig("gm.svg")
-    
     
 if __name__ == '__main__':
     main()
