@@ -6,10 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import pickle
 from numpy import loadtxt
+import seaborn as sns
 import argparse
 
+sns.set_style('white')
+
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--size", default = 0.5)
+parser.add_argument("-s", "--size", default = 2000)
 parser.add_argument("-a", "--aph", default = 0.6) # alpha
 parser.add_argument("--svg", default=False, action="store_true")
 
@@ -46,6 +49,12 @@ def visualise(size,aph):
     colourdict = dict(zip(data_df.node,data_df.colour))
     colours = [colourdict.get(int(n)) for n in nodes]
     
+    # set up sizes
+    norm_degree = [] 
+    for i in data_df.degree:
+        y = (i-data_df.degree.min())/(data_df.degree.max()-data_df.degree.min())
+        norm_degree.append(y)
+    
     print("\n- visualise function")
     print("----- Saving graph image")
 
@@ -53,7 +62,7 @@ def visualise(size,aph):
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1],
-               s=[i*(float(size)) for i in degree],
+               s=[i*(float(size)) for i in norm_degree],
                alpha=aph,
                c=colours)
     

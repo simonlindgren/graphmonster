@@ -203,6 +203,7 @@ def node2vec(walk,num,pparam,qparam,win):
 def t_sne(perp,iters):
     print("\n- t-sne function")
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
+    global nodes
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
     tsne = TSNE(n_components=2, n_iter=int(iters), perplexity=int(perp))
@@ -231,17 +232,25 @@ def visualise():
     # Visualise
     print("\n- visualise function")
     print("----- Saving graph as pdf and svg")
-    degree = data_df.degree
 
     # colours must be in the same order as in the model
     # this was set as 'nodes' above
     colourdict = dict(zip(data_df.node,data_df.colour))
     colours = [colourdict.get(int(n)) for n in nodes]
-
+    
+    # Prepare sizing
+    norm_degree = [] 
+    for i in data_df.degree:
+        y = (i-data_df.degree.min())/(data_df.degree.max()-data_df.degree.min())
+        norm_degree.append(y)
+    
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
-    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree, alpha=0.6, c=colours)
+    ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], 
+               s=[i*2000 for i in norm_degree], 
+                  alpha=0.6, 
+                  c=colours)
 
     figure.savefig("gm.png")
     
