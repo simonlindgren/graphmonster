@@ -243,8 +243,7 @@ def visualise():
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree, alpha=0.6, c=colours)
 
-    figure.savefig("gm.pdf", bbox_inches='tight')
-    figure.savefig("gm.svg")
+    figure.savefig("gm.png")
     
 if __name__ == '__main__':
     main()
