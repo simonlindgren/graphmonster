@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 
 import networkx as nx
+import infomap
+import pandas as pd
 from node2vec import Node2Vec
+import umap
 import numpy as np
 from numpy import savetxt
 from sklearn.manifold import TSNE
-import umap
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import infomap
+
+# silence NumbaPerformanceWarning
+import warnings
+warnings.filterwarnings('ignore')
+
+
 import pickle
 import argparse
 
@@ -22,9 +28,9 @@ parser.add_argument("-w", "--win", default = 10)
 parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=600)
-parser.add_argument("-x", "--perp", default = 10)
+parser.add_argument("-x", "--perp", default = 20)
 parser.add_argument("--nneigh", default = 20)
-parser.add_argument("-m", "--mind", default = 1 )
+parser.add_argument("-m", "--mind", default = 1)
 parser.add_argument("--mtrc", default = "euclidean")
 parser.add_argument("--tsne", default=False, action="store_true")
 
@@ -54,7 +60,6 @@ def main():
         t_sne(args.perp,args.iters)
     else:
         umap_reduction(int(args.nneigh),float(args.mind),args.mtrc)
-    colourise(args.keep)
     visualise()
     print("")
     print("Done!")
@@ -122,39 +127,73 @@ def infomap_clu(G):
 
     # Save graph to disk
     nx.write_gpickle(G, "gm-graph.pkl")
-    # Save the degree list to disk
-    degree = [G.degree[n] for n in G.nodes()]
-    with open('degrees.pkl', 'wb') as f:
-        pickle.dump(degree, f)
+    
     
 def communityrip(G,keep):
-    print("\n- communityrip function")
-    communities = []
-    for n,d in G.nodes(data=True):
-        communities.append(d['community'])
-    sizeranked_comms = list(pd.Series(communities).value_counts().index)
+    # Which are the biggest communities?
+    communitylist = []
+    for n,d in G.nodes(data = True):
+        communitylist.append(d['community'])
+    sizeranked_comms = list(pd.Series(communitylist).value_counts().index)
+
+    # Keep a number of communities
     global keepcomms
     keepcomms = sizeranked_comms[:int(keep)]
-    # write keepcomms to disk
-    with open('keepcomms.pkl', 'wb') as f:
-        pickle.dump(keepcomms, f)
     
+    # Reduce the graph
     removenodes = []
     for n,d in G.nodes(data=True):
-        if not d['community'] in keepcomms:
+        if d['community'] not in keepcomms:
             removenodes.append(n)
-    print("----- Keeping " + str(keep) + " communities")
-    before = len(G.nodes)
     G.remove_nodes_from(removenodes)
-    after = len(G.nodes)
-    percentage = round(100*(before-after)/before)
-    print("----- "+ str(after) + " of " + str(before) + " nodes kept (" + str(percentage) + "% removed)")
-       
+    
+    # Graph is all set, so we make a dataframe
+    nodes = []
+    names = []
+    comms = []
+    degrees = []
 
+    for n,d in G.nodes(data=True):
+        nodes.append(n)
+        names.append(d['name'])
+        comms.append(d['community'])
+        degrees.append(G.degree[n])
+
+    global data_df
+    data_df = pd.DataFrame()
+
+    data_df['node'] = nodes
+    data_df['name'] = names
+    data_df['community'] = comms
+    data_df['degree'] = degrees
+    
+    # Add a colours column to the dataframe
+    nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700','#000000','#aaffc3','#800000','#bcf60c','#808080','#ffe119']
+    boring_colour = '#c0c0c0' # silver
+
+    if len(keepcomms) < 17:
+        clu_colours = dict(zip(keepcomms,nice_colours[:len(keepcomms)]))
+    else:
+        taillength = len(keepcomms) - 16
+        tail = []
+        for i in range(taillength):
+            tail.append(boring_colour)
+        colz = nice_colours + tail
+        clu_colours = dict(zip(keepcomms,colz))
+
+    colour_df = pd.DataFrame(clu_colours, index = [0]).T.reset_index()
+    colour_df.columns=["community", "colour"]
+
+    data_df = pd.merge(data_df,colour_df, on="community")  
+    
+    # Save dataframe
+    data_df.to_csv("gm.csv")
+    
+       
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
-    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=10, p=float(pparam), q=float(qparam), quiet=True)
+    node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=1, p=float(pparam), q=float(qparam), quiet=True)
     print("----- Learning embeddings")
     global model
     model = node2vec.fit(window=int(win), min_count=1)    
@@ -174,6 +213,7 @@ def t_sne(perp,iters):
 def umap_reduction(nneigh,mind,mtrc):
     print("\n- umap function")
     print("----- Reducing to 2-dimensional space (umap) ...")
+    global nodes
     nodes = [n for n in model.wv.vocab]
     embeddings = np.array([model.wv[x] for x in nodes])
     global embeddings_2d
@@ -181,78 +221,28 @@ def umap_reduction(nneigh,mind,mtrc):
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
-def colourise(keep):
-    print("\n- colourise function")
-    nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700','#000000','#aaffc3','#800000','#bcf60c','#808080','#ffe119']
-    boring_colour = '#c0c0c0' # silver
-    
-    if len(keepcomms) < 17:
-        clu_colours = dict(zip(keepcomms,nice_colours[:len(keepcomms)]))
-    else:
-        taillength = len(keepcomms) - 16
-        tail = []
-        for i in range(taillength):
-            tail.append(boring_colour)
-        colz = nice_colours + tail
-        clu_colours = dict(zip(keepcomms,colz))
-    
-    # df of nodes, names and clusters
-    nodz = []
-    names = []
-    clus = []
-    for n,d in G.nodes(data=True):
-        nodz.append(n)
-        names.append(d['name'])
-        clus.append(d['community'])
-        
-    df1 = pd.DataFrame(zip(nodz,names,clus), columns = ['node','name','community'])
-    
-    
-    # A df of cluster colours
-    df2 = pd.DataFrame(clu_colours, index = [0]).T.reset_index()
-    df2.columns=["community", "colour"]
-    
-    
-    # Join them
-    global df3
-    df3 = pd.merge(df1,df2, on="community")
-    df3['degree'] = [G.degree[n] for n in G.nodes()]
-    
-    # save data
-    df3.to_csv("gm.csv")
-    
-    colourdict = dict(zip(df3.node,df3.colour))
-
-    #nodes = [n for n in G.nodes()] # get the order right here!
-    nodes = [n for n in model.wv.vocab]
-    global colours
-    colours = []
-    
-    for n in nodes:
-        colours.append(colourdict.get(int(n)))
-
 def visualise():
-    
     # Prepare for labelling
-    # a dict of comm labels and colour
     with open("commlabels.txt", "w") as labelfile:
         labelfile.write("community;community_label\n")
         for c,comm in enumerate(keepcomms):
             labelfile.write(str(comm) + ";label" + str(c) + "\n")
-
-
     
+    # Visualise
     print("\n- visualise function")
     print("----- Saving graph as pdf and svg")
-    # Size by degree
-    degree = [G.degree[n] for n in G.nodes()]
+    degree = data_df.degree
 
+    # colours must be in the same order as in the model
+    # this was set as 'nodes' above
+    colourdict = dict(zip(data_df.node,data_df.colour))
+    colours = [colourdict.get(int(n)) for n in nodes]
 
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], s=degree, alpha=0.6, c=colours)
-  
+
     figure.savefig("gm.pdf", bbox_inches='tight')
     figure.savefig("gm.svg")
     

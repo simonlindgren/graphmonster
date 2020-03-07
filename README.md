@@ -13,8 +13,6 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
-`--mst`, set this flag to extract the minimum spanning tree (useful for large graphs)
-
 `--tsne`, set this flag to use t-sne instead of umap.
 
 _Clustering_
@@ -38,6 +36,8 @@ _umap_
 `-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 20.
 
 `-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
+
+`--mtrc`, metric (default = euclidean)
 
 _t-sne_
 
