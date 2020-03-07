@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import pickle
+import numpy as np
 from numpy import loadtxt
 import seaborn as sns
 import argparse
@@ -49,12 +50,9 @@ def visualise(size,aph):
     colourdict = dict(zip(data_df.node,data_df.colour))
     colours = [colourdict.get(int(n)) for n in nodes]
     
-    # set up sizes
-    norm_degree = [] 
-    for i in data_df.degree:
-        y = (i-data_df.degree.min())/(data_df.degree.max()-data_df.degree.min())
-        norm_degree.append(y)
-    
+    # log degree to avoid extreme node sizes      
+    log_degree = np.log(data_df.degree)
+                    
     print("\n- visualise function")
     print("----- Saving graph image")
 
@@ -62,7 +60,7 @@ def visualise(size,aph):
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1],
-               s=[i*(float(size)) for i in norm_degree],
+               s=[i*(float(size)) for i in log_degree],
                alpha=aph,
                c=colours)
     

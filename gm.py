@@ -231,24 +231,21 @@ def visualise():
     
     # Visualise
     print("\n- visualise function")
-    print("----- Saving graph as pdf and svg")
+    print("----- Saving graph image")
 
     # colours must be in the same order as in the model
     # this was set as 'nodes' above
     colourdict = dict(zip(data_df.node,data_df.colour))
     colours = [colourdict.get(int(n)) for n in nodes]
     
-    # Prepare sizing
-    norm_degree = [] 
-    for i in data_df.degree:
-        y = (i-data_df.degree.min())/(data_df.degree.max()-data_df.degree.min())
-        norm_degree.append(y)
+    # log degree to avoid extreme node sizes      
+    log_degree = np.log(data_df.degree)
     
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], 
-               s=[i*2000 for i in norm_degree], 
+               s=[i*60 for i in log_degree], 
                   alpha=0.6, 
                   c=colours)
 

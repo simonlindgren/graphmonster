@@ -68,7 +68,7 @@ python gm_rv.py <parameters>
 
 After running the graph creation script (`gm.py`), and possibly the twittergrab script (`gm_tg.py`), the revisualisation script (`gm_rv.py`) can be run iteratively to tweak the visualisation. This may include editing `commlabels.txt`, and alterations of the following parameters:
 
-`-s`, `--size`, nodesize will be (minmax normalised degree * size), default = 2000.
+`-s`, `--size`, nodesize will be (log degree * size), default = 60.
 
 `-a`, `--alpha`, alpha opacity of nodes, default = 0.6.
 

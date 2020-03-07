@@ -2,3 +2,4 @@ networkx
 node2vec
 sklearn
 umap
+seaborn
