@@ -29,7 +29,7 @@ parser.add_argument("-p", "--pparam", default=1)
 parser.add_argument("-q", "--qparam", default=1)
 parser.add_argument("-i", "--iters", default=600)
 parser.add_argument("-x", "--perp", default = 20)
-parser.add_argument("--nneigh", default = 20)
+parser.add_argument("--nneigh", default = 10)
 parser.add_argument("-m", "--mind", default = 1)
 parser.add_argument("--mtrc", default = "euclidean")
 parser.add_argument("--tsne", default=False, action="store_true")
@@ -168,7 +168,7 @@ def communityrip(G,keep):
     data_df['degree'] = degrees
     
     # Add a colours column to the dataframe
-    nice_colours = ['#100c08','#00ff00','#FF0000','#ff8c00','#ff69b4','#7fffd4','#9400d3','#9400d3','#ffb6c1','#ffd700','#000000','#aaffc3','#800000','#bcf60c','#808080','#ffe119']
+    nice_colours = ["#2f4f4f","#7f0000","#191970","#006400","#bdb76b","#ff0000","#ffa500","#ffff00","#0000cd","#00ff00","#00fa9a","#00ffff","#ff00ff","#1e90ff","#ff69b4","#e6e6fa"]
     boring_colour = '#c0c0c0' # silver
 
     if len(keepcomms) < 17:

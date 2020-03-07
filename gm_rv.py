@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--size", default = 60)
 parser.add_argument("-a", "--aph", default = 0.6) # alpha
 parser.add_argument("--svg", default=False, action="store_true")
+parser.add_argument("-d", "--dark", default=False, action="store_true")
 
 args = parser.parse_args()
 
@@ -58,11 +59,14 @@ def visualise(size,aph):
 
     # Plot figure
     figure = plt.figure(figsize=(16, 12))
+    if args.dark is True:
+        plt.style.use('dark_background')
     ax = figure.add_subplot(111)
     ax.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1],
                s=[i*(float(size)) for i in log_degree],
                alpha=aph,
                c=colours)
+    
     
     # Legend
     legend_labels = [mpatches.Patch(color=colour, label=community_label) for community_label,colour in dict(zip(full_df.community_label,full_df.colour)).items()]

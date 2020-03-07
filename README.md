@@ -33,7 +33,7 @@ _Node2Vec_
 
 _umap_
 
-`-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 20.
+`-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 10.
 
 `-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
 
@@ -71,6 +71,8 @@ After running the graph creation script (`gm.py`), and possibly the twittergrab 
 `-s`, `--size`, nodesize will be (log degree * size), default = 60.
 
 `-a`, `--alpha`, alpha opacity of nodes, default = 0.6.
+
+`-d`, `--dark`, darkmode graph
 
 `--svg`, set this flag to also create an svg file
 
