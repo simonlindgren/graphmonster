@@ -4,6 +4,7 @@
 *.csv
 *.txt
 *.pkl
+*.png
 
 # Local and personal  edited version of gm_tg file 
 gm_tgx.py
