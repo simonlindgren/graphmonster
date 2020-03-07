@@ -25,27 +25,26 @@ def main():
 
 def twittergrab(file,numcomms):
     # Get graphmonster data
-    data = pd.read_csv(file)
+    data_df = pd.read_csv(file)
       
-    
     # Authorise with the Twitter api
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
     
     # Get list of communities by size, and slice by keepers
-    sizeranked_comms = data.community.value_counts().index
+    sizeranked_comms = data_df.community.value_counts().index
     keepcomms = sizeranked_comms[:int(numcomms)]
     
     # Make api call
     print("----- Calling api ...")
     with open("community-identification.txt", "w") as outfile:
         for kc in keepcomms:
-            comm_df = data[data['community'] == kc].sort_values(by="degree", ascending=False)
+            comm_df = data_df[data_df['community'] == kc].sort_values(by="degree", ascending=False)
             topnames = list(comm_df['name'][:10])  
             users = api.lookup_users(topnames)
 
-            degree_dict = dict(zip(data.name,data.degree))
+            degree_dict = dict(zip(data_df.name,data_df.degree))
 
             outfile.write("Community " + str(kc) + "\n" + "="*40)
             for c,u in enumerate(users):
