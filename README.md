@@ -51,7 +51,7 @@ _t-sne_
 If your edgelist consists of Twitter user id numbers, you can use the twittergrab function. After running graphmonster (which will output a file named `gm.csv`), run:
 
 ```
-python gm_tw.py
+python gm_tg.py
 ```
 
 Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`.
