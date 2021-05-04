@@ -85,3 +85,9 @@ Run the following command to install package dependencies:
 ```
 pip install -r requirements.txt
 ```
+
+---
+
+### Notes
+
+`210504` Had some troubles getting it to run. Found that having an updated version of `umap-learn` installed (incl. `numba` and `llvmlite`) was important.
