@@ -3,3 +3,4 @@ node2vec
 sklearn
 umap
 seaborn
+infomap
