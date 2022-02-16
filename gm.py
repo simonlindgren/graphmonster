@@ -229,7 +229,7 @@ def node2vec(walk,num,pparam,qparam,win):
     print("----- This step takes significant time for large graphs ...")
     node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=1, p=float(pparam), q=float(qparam), quiet=True)
     print("----- Learning embeddings")
-    #global model
+    global model
     model = node2vec.fit(window=int(win), min_count=1)    
     # save the model to disk       
     pickle.dump(model, open("gm-n2v.pkl", 'wb'))     
