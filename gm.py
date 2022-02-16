@@ -91,23 +91,21 @@ def graphcrunch(file):
     numedges = len(G.edges())
     print("----- There are " + str(numnodes) + " nodes and " + str(numedges) + " edges in the graph.")
     
-    #print("----- Removing edges by threshold")
-    #threshold = 2
-    #while len(G.edges()) > 2000000:
-    #    removeedges = []
-    #    for s,t,data in G.edges(data=True):
-    #        if data['weight'] < threshold:
-    #            removeedges.append((s,t))
-    #    G.remove_edges_from(removeedges)
-    #    threshold += 1
+    print("----- Removing edges with a weight < 10")
+    threshold = 10
     
+    removeedges = []
+    for s,t,data in G.edges(data=True):
+      if data['weight'] < threshold:
+         removeedges.append((s,t))
+    G.remove_edges_from(removeedges)
     
-    print("----- Removing nodes below average degree")
-    
-    #av_degree = float(nx.info(G).split("Average degree:")[-1].strip())
+    print("----- Removing nodes with a degree < 20, or < average degree if it is > 20. ")
     
     N, K = G.order(), G.size()
     av_degree = float(K) / N
+    if av_degree < 20:
+      av_degree = 20
       
     print("----- Average degree is " + str(av_degree))
     remove = []
