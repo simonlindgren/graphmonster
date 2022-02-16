@@ -53,7 +53,7 @@ logo='''
 
 print(logo)
 
-@jit # run all on cuda GPU
+
 def main():
     graphcrunch(args.file)
     infomap_clu(G)
@@ -67,7 +67,6 @@ def main():
     print("")
     print("Done!")
 
-@jit
 def graphcrunch(file):
     global G
     print("- graphcrunch function")
@@ -162,8 +161,7 @@ def infomap_clu(G):
 
     # Save graph to disk
     nx.write_gpickle(G, "gm-graph.pkl")
-    
-@jit    
+       
 def communityrip(G,keep):
     # Which are the biggest communities?
     communitylist = []
@@ -223,20 +221,19 @@ def communityrip(G,keep):
     
     # Save dataframe
     data_df.to_csv("gm.csv")
-    
-@jit      
+ 
+@jit
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
     print("----- This step takes significant time for large graphs ...")
     node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=1, p=float(pparam), q=float(qparam), quiet=True)
     print("----- Learning embeddings")
-    global model
+    #global model
     model = node2vec.fit(window=int(win), min_count=1)    
     # save the model to disk       
     pickle.dump(model, open("gm-n2v.pkl", 'wb'))     
 
-@jit
 def t_sne(perp,iters):
     print("\n- t-sne function")
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
@@ -248,7 +245,7 @@ def t_sne(perp,iters):
     embeddings_2d = tsne.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
 
-@jit
+
 def umap_reduction(nneigh,mind,mtrc):
     print("\n- umap function")
     print("----- Reducing to 2-dimensional space (umap) ...")
@@ -260,7 +257,7 @@ def umap_reduction(nneigh,mind,mtrc):
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
-@jit 
+
 def visualise():
     # Prepare for labelling
     with open("commlabels.txt", "w") as labelfile:
