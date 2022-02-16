@@ -11,7 +11,6 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import sys
-from numba import jit, cuda # prepare to run on GPU
 
 # silence NumbaPerformanceWarning
 import warnings
@@ -137,7 +136,6 @@ def graphcrunch(file):
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
  
-@jit
 def infomap_clu(G):
     print("\n- infomap_clu function")
     """
@@ -222,7 +220,6 @@ def communityrip(G,keep):
     # Save dataframe
     data_df.to_csv("gm.csv")
  
-@jit
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
