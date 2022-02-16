@@ -16,7 +16,6 @@ import sys
 import warnings
 warnings.filterwarnings('ignore')
 
-
 import pickle
 import argparse
 
@@ -240,7 +239,6 @@ def t_sne(perp,iters):
     embeddings_2d = tsne.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
 
-
 def umap_reduction(nneigh,mind,mtrc):
     print("\n- umap function")
     print("----- Reducing to 2-dimensional space (umap) ...")
@@ -252,7 +250,6 @@ def umap_reduction(nneigh,mind,mtrc):
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
-
 def visualise():
     # Prepare for labelling
     with open("commlabels.txt", "w") as labelfile:
