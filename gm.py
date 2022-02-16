@@ -99,12 +99,10 @@ def graphcrunch(file):
          removeedges.append((s,t))
     G.remove_edges_from(removeedges)
     
-    print("----- Removing nodes with a degree < 20, or < average degree if it is > 20. ")
+    print("----- Removing nodes with a degree < average degree. ")
     
     N, K = G.order(), G.size()
     av_degree = float(K) / N
-    if av_degree < 20:
-      av_degree = 20
       
     print("----- Average degree is " + str(av_degree))
     remove = []
