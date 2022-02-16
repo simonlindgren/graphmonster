@@ -88,7 +88,7 @@ def graphcrunch(file):
    
     numnodes = len(G.nodes())
     numedges = len(G.edges())
-    print("----- There are " + str(leftnodes) + " nodes and " + str(leftedges) + " edges in the graph.")
+    print("----- There are " + str(numnodes) + " nodes and " + str(numedges) + " edges in the graph.")
     
     #print("----- Removing edges by threshold")
     #threshold = 2
