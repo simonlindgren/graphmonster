@@ -102,7 +102,7 @@ def graphcrunch(file):
     #av_degree = float(nx.info(G).split("Average degree:")[-1].strip())
     
     N, K = G.order(), G.size()
-    avg_degree = float(K) / N
+    av_degree = float(K) / N
       
     print("----- Average degree is " + str(av_degree))
     remove = []
