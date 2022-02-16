@@ -53,7 +53,7 @@ logo='''
 
 print(logo)
 
-@jit(target ="cuda") # run all on cuda GPU
+@jit # run all on cuda GPU
 def main():
     graphcrunch(args.file)
     infomap_clu(G)
