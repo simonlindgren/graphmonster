@@ -98,8 +98,13 @@ def graphcrunch(file):
     
     
     print("----- Removing nodes below average degree")
-    av_degree = float(nx.info(G).split("Average degree:")[-1].strip())
-    print("----- Average degree is " + str(av_degree))
+    
+    #av_degree = float(nx.info(G).split("Average degree:")[-1].strip())
+    
+    N, K = G.order(), G.size()
+    avg_degree = float(K) / N
+      
+      print("----- Average degree is " + str(av_degree))
     remove = []
     for i in G.degree():
         if i[1] < av_degree:
