@@ -104,7 +104,7 @@ def graphcrunch(file):
     N, K = G.order(), G.size()
     avg_degree = float(K) / N
       
-      print("----- Average degree is " + str(av_degree))
+    print("----- Average degree is " + str(av_degree))
     remove = []
     for i in G.degree():
         if i[1] < av_degree:
