@@ -235,7 +235,7 @@ def t_sne(perp,iters):
     print("\n- t-sne function")
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
     global nodes
-    nodes = [n for n in model.wv.vocab]
+    nodes = [n for n in model.wv.key_to_index]
     embeddings = np.array([model.wv[x] for x in nodes])
     tsne = TSNE(n_components=2, n_iter=int(iters), perplexity=int(perp))
     global embeddings_2d
@@ -247,7 +247,7 @@ def umap_reduction(nneigh,mind,mtrc):
     print("\n- umap function")
     print("----- Reducing to 2-dimensional space (umap) ...")
     global nodes
-    nodes = [n for n in model.wv.vocab]
+    nodes = [n for n in model.wv.key_to_index]
     embeddings = np.array([model.wv[x] for x in nodes])
     global embeddings_2d
     umap_r = umap.UMAP(n_neighbors=nneigh,min_dist=mind,metric=mtrc)
