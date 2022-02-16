@@ -85,6 +85,10 @@ def graphcrunch(file):
             else:
                 G.add_edge(s,t,weight = 1)
     G.remove_edges_from(nx.selfloop_edges(G))
+   
+    numnodes = len(G.nodes())
+    numedges = len(G.edges())
+    print("----- There are " + str(leftnodes) + " nodes and " + str(leftedges) + " edges in the graph.")
     
     #print("----- Removing edges by threshold")
     #threshold = 2
