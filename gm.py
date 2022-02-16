@@ -11,6 +11,7 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import sys
+from numba import jit, cuda # prepare to run on GPU
 
 # silence NumbaPerformanceWarning
 import warnings
@@ -52,6 +53,7 @@ logo='''
 
 print(logo)
 
+@jit(target ="cuda") # run all on cuda GPU
 def main():
     graphcrunch(args.file)
     infomap_clu(G)
