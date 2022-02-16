@@ -10,6 +10,7 @@ from numpy import savetxt
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import sys
 
 # silence NumbaPerformanceWarning
 import warnings
@@ -76,27 +77,48 @@ def graphcrunch(file):
                 t = e.split()[1]
             except:
                 print("----- Your edgelist has the wrong format!")
-                sys.exit()
+                print("----- Skipped the row that said: " + str(e))
+                pass
+                #sys.exit()
             if G.has_edge(s,t):
                 G[s][t]['weight'] += 1
             else:
                 G.add_edge(s,t,weight = 1)
     G.remove_edges_from(nx.selfloop_edges(G))
     
-    print("----- Removing edges by threshold")
-    threshold = 2
-    while len(G.edges()) > 2000000:
-        removeedges = []
-        for s,t,data in G.edges(data=True):
-            if data['weight'] < threshold:
-                removeedges.append((s,t))
-        G.remove_edges_from(removeedges)
-        threshold += 1
+    #print("----- Removing edges by threshold")
+    #threshold = 2
+    #while len(G.edges()) > 2000000:
+    #    removeedges = []
+    #    for s,t,data in G.edges(data=True):
+    #        if data['weight'] < threshold:
+    #            removeedges.append((s,t))
+    #    G.remove_edges_from(removeedges)
+    #    threshold += 1
+    
+    
+    print("----- Removing nodes below average degree")
+    av_degree = float(nx.info(G).split("Average degree:")[-1].strip())
+    print("----- Average degree is " + str(av_degree))
+    remove = []
+    for i in G.degree():
+        if i[1] < av_degree:
+            remove.append(i[0])
+    G.remove_nodes_from(remove)
+    
+    leftnodes = len(G.nodes())
+    leftedges = len(G.edges())
+    if leftedges > 0:
+        print("----- " + str(leftnodes) + " nodes and " + str(leftedges) + " edges still in the graph. Continuing ...")
+    else:
+        print("----- No edges left. Consider commenting away the node removal step in gm.py. Stopping.")
+        sys.exit()
+    
     
     print("----- Deleting unconnected components")
     giant_component_size = len(sorted(nx.connected_components(G), key=len, reverse=True)[0])
     for component in list(nx.connected_components(G)):
-        if len(component)<giant_component_size:
+        if len(component) < giant_component_size:
             for node in component:
                 G.remove_node(node)
    
@@ -108,14 +130,14 @@ def infomap_clu(G):
     print("\n- infomap_clu function")
     """
     Partition network with the Infomap algorithm.
-    Annotates nodes with 'community' id and return number of communities found.
+    Annotates nodes with 'community' id and returns number of communities found.
     """
     infomapX = infomap.Infomap("--two-level --silent")
 
     print("----- Building Infomap network")
     for e in G.edges():
         infomapX.network.addLink(*e)
-
+        
     print("----- Finding communities")
     infomapX.run();
 
@@ -193,6 +215,7 @@ def communityrip(G,keep):
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
+    print("----- This step takes significant time for large graphs ...")
     node2vec = Node2Vec(G, dimensions=20, walk_length=int(walk), num_walks=int(num), workers=1, p=float(pparam), q=float(qparam), quiet=True)
     print("----- Learning embeddings")
     global model
