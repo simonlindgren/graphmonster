@@ -67,6 +67,7 @@ def main():
     print("")
     print("Done!")
 
+@jit
 def graphcrunch(file):
     global G
     print("- graphcrunch function")
@@ -136,7 +137,8 @@ def graphcrunch(file):
     print("----- Renaming nodes")
     # replace names with integer labels and set old label as 'name' attribute
     G = nx.convert_node_labels_to_integers(G,label_attribute="name")
-    
+ 
+@jit
 def infomap_clu(G):
     print("\n- infomap_clu function")
     """
@@ -161,7 +163,7 @@ def infomap_clu(G):
     # Save graph to disk
     nx.write_gpickle(G, "gm-graph.pkl")
     
-    
+@jit    
 def communityrip(G,keep):
     # Which are the biggest communities?
     communitylist = []
@@ -222,7 +224,7 @@ def communityrip(G,keep):
     # Save dataframe
     data_df.to_csv("gm.csv")
     
-       
+@jit      
 def node2vec(walk,num,pparam,qparam,win):
     print("\n- node2vec function")
     print("----- Generating walks")
@@ -233,7 +235,8 @@ def node2vec(walk,num,pparam,qparam,win):
     model = node2vec.fit(window=int(win), min_count=1)    
     # save the model to disk       
     pickle.dump(model, open("gm-n2v.pkl", 'wb'))     
-    
+
+@jit
 def t_sne(perp,iters):
     print("\n- t-sne function")
     print("----- Reducing to 2-dimensional space (t-SNE) ...")
@@ -244,7 +247,8 @@ def t_sne(perp,iters):
     global embeddings_2d
     embeddings_2d = tsne.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
-       
+
+@jit
 def umap_reduction(nneigh,mind,mtrc):
     print("\n- umap function")
     print("----- Reducing to 2-dimensional space (umap) ...")
@@ -256,6 +260,7 @@ def umap_reduction(nneigh,mind,mtrc):
     embeddings_2d = umap_r.fit_transform(embeddings)
     savetxt('gm-2d.csv', embeddings_2d, delimiter=',')
         
+@jit 
 def visualise():
     # Prepare for labelling
     with open("commlabels.txt", "w") as labelfile:
