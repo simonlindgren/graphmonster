@@ -166,6 +166,9 @@ def communityrip(G,keep):
     global keepcomms
     keepcomms = sizeranked_comms[:int(keep)]
     
+    with open('keepcomms.pkl', 'wb') as f:
+         pickle.dump(keepcomms, f)
+          
     # Reduce the graph
     removenodes = []
     for n,d in G.nodes(data=True):
