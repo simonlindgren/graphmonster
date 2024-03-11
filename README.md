@@ -31,7 +31,6 @@ _Node2Vec_
 
 ----
 
-`--tsne`, set this flag to use t-sne instead of umap.
 
 ## Second step: Dimensionality reduction and initial plot
 
@@ -48,7 +47,8 @@ _umap (default)_
 `--mtrc`, metric (default = euclidean)
 
 _t-sne_
-`--tsne`, set this flag to use t-sne instead of umap
+
+`--tsne`, set this flag to use t-sne instead of umap.
 
 `-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 20.
 
