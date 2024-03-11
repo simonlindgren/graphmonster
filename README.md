@@ -29,9 +29,6 @@ _Node2Vec_
 
 `-q`, `--qparam`, q-parameter (inout), default = 1.
 
-----
-
-
 ## Second step: Dimensionality reduction and initial plot
 
 ```
