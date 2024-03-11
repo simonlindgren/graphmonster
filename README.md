@@ -51,6 +51,8 @@ _t-sne_
 
 `-i`, `--iters`, number of iterations, default = 600 (min 250).
 
+_Start with low `x` and `i` and increase iteratively to find sweet spot_.
+
 ---
 
 #### Labelling communities
