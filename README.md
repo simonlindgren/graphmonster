@@ -8,7 +8,7 @@ Graphmonster will take an edgelist, create a graph, and remove noise from it. It
 python gm.py <parameters>
 ```
 
-## Parameters
+#### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
