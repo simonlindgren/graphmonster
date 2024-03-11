@@ -5,7 +5,7 @@ Graphmonster will take an edgelist, create a graph, and remove noise from it. It
 ## First step: Remove noise and train embeddings
 
 ```
-python gm.py <parameters>
+python train.py <parameters>
 ```
 
 ### Parameters
