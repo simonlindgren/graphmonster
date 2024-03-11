@@ -2,13 +2,13 @@
 
 Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and umap (or t-sne) for reducing dimensionality. In the resulting visualised graph, nodes are coloured by community (Infomap algorithm) and sized by degree.
 
-### First step: Remove noise and train embeddings
+## First step: Remove noise and train embeddings
 
 ```
 python gm.py <parameters>
 ```
 
-#### Parameters
+### Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
