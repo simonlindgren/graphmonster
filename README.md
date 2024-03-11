@@ -35,7 +35,7 @@ _umap_
 
 `-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 10.
 
-`-m`, `-- mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
+`-m`, `--mind`, minimum distance, emphasise local structure (low) or even distribution (high), recommended 0.001-0.5, default = 1.
 
 `--mtrc`, metric (default = euclidean)
 
