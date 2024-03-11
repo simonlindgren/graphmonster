@@ -56,6 +56,8 @@ _t-sne_
 
 _Start with low `x` and `i` and increase gradually to find sweet spot_.
 
+<br>
+
 ## Third step: Tweaks
 
 ```
