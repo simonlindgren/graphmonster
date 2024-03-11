@@ -45,7 +45,7 @@ logo='''
  | |_| |  _ <  / ___ \|  __/|  _  | |  | | |_| | |\  |___) || | | |___|  _ < 
   \____|_| \_\/_/   \_\_|   |_| |_|_|  |_|\___/|_| \_|____/ |_| |_____|_| \_|
    
-   Written by Simon Lindgren <github.com/simonlindgren>
+   Written by Simon Lindgren <simon.lindgren@umu.se>
                                                                                     
 '''
 
@@ -181,6 +181,10 @@ def communityrip(G,keep):
     names = []
     comms = []
     degrees = []
+
+    # pickle the degrees list
+    with open('degrees.pkl', 'wb') as f:
+        pickle.dump(degrees, f)
 
     for n,d in G.nodes(data=True):
         nodes.append(n)
