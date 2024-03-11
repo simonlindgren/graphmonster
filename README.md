@@ -92,9 +92,3 @@ Newer versions might work, but here is a working setup as of 2024:
 - umap-learn 0.5.5
 - seaborn 0.13.2
 - infomap 2.7.1
-
----
-
-### Notes
-
-**May 4, 2021** Had some troubles getting it to run. Found that having an updated version of `umap-learn` installed (incl. `numba` and `llvmlite`) was important.
