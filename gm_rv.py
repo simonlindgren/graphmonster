@@ -47,7 +47,8 @@ def visualise(size,aph):
     full_df = pd.merge(commlabels_df, data_df, on="community")
     
     # set up colours
-    nodes = [n for n in model.wv.vocab]
+    nodes = [n for n in list(model.wv.key_to_index.keys())]
+
     colourdict = dict(zip(data_df.node,data_df.colour))
     colours = [colourdict.get(int(n)) for n in nodes]
     
