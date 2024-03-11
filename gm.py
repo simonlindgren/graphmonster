@@ -45,7 +45,7 @@ logo='''
  | |_| |  _ <  / ___ \|  __/|  _  | |  | | |_| | |\  |___) || | | |___|  _ < 
   \____|_| \_\/_/   \_\_|   |_| |_|_|  |_|\___/|_| \_|____/ |_| |_____|_| \_|
    
-   Written by Simon Lindgren <simon.lindgren@umu.se>
+   Written by Simon Lindgren <github.com/simonlindgren>
                                                                                     
 '''
 
