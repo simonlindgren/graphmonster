@@ -47,7 +47,7 @@ _t-sne_
 
 `--tsne`, set this flag to use t-sne instead of umap.
 
-`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 20.
+`-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 10.
 
 `-i`, `--iters`, number of iterations, default = 600 (min 250).
 
