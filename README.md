@@ -47,16 +47,10 @@ _t-sne_
 
 ---
 
-#### Twittergrab function
-If your edgelist consists of Twitter user id numbers, you can use the twittergrab function. After running graphmonster (which will output a file named `gm.csv`), run:
+#### Labelling communities
 
-```
-python gm_tg.py
-```
+When running `gm.py`, the files `commlabels.txt` and `gm.csv` will be created. The community info in the csv can be used, depending on the character of your data, to look up more info about the nodes as input to setting the labels in the txt.
 
-Twittergrabber will read the csv, call up the Twitter API, and get profile data on the top ten users (by degree) in each cluster. This information will be saved in `community-identification.txt`.
-
-A valid set of Twitter api credentials must be provided in `credentials.py`.
 
 ---
 
@@ -66,7 +60,7 @@ A valid set of Twitter api credentials must be provided in `credentials.py`.
 python gm_rv.py <parameters>
 ```
 
-After running the graph creation script (`gm.py`), and possibly the twittergrab script (`gm_tg.py`), the revisualisation script (`gm_rv.py`) can be run iteratively to tweak the visualisation. This may include editing `commlabels.txt`, and alterations of the following parameters:
+After running the graph creation script (`gm.py`), the revisualisation script (`gm_rv.py`) can be run iteratively to tweak the visualisation. This may include editing `commlabels.txt`, and alterations of the following parameters:
 
 `-s`, `--size`, nodesize will be (log degree * size), default = 60.
 
