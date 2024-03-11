@@ -202,7 +202,7 @@ def communityrip(G,keep):
     colour_df = pd.DataFrame(clu_colours, index = [0]).T.reset_index()
     colour_df.columns=["community", "colour"]
 
-    data_df = pd.merge(data_df,colour_df, on="community")  
+    data_df = pd.merge(data_df,colour_df, on="community").reset_index(drop=True)
     
     # Save dataframe
     data_df.to_csv("gm.csv")
