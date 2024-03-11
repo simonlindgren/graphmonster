@@ -85,6 +85,13 @@ Run the following command to install package dependencies:
 ```
 pip install -r requirements.txt
 ```
+Newer versions might work, but here is a working setup as of 2024:
+- networkx 2.7.1
+- node2vec 0.4.6
+- scikit-learn 1.0.2
+- umap-learn 0.5.5
+- seaborn 0.13.2
+- infomap 2.7.1
 
 ---
 
