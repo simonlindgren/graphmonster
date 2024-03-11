@@ -2,18 +2,15 @@
 
 Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and umap (or t-sne) for reducing dimensionality. In the resulting visualised graph, nodes are coloured by community (Infomap algorithm) and sized by degree.
 
-### Usage
+### First step: Remove noise and train embeddings
 
 ```
 python gm.py <parameters>
 ```
-Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
-### Parameters
+## Parameters
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
-
-`--tsne`, set this flag to use t-sne instead of umap.
 
 _Clustering_
 
@@ -30,6 +27,12 @@ _Node2Vec_
 `-p`, `--pparam`, p-parameter (return), default = 1.
 
 `-q`, `--qparam`, q-parameter (inout), default = 1.
+
+----
+
+`--tsne`, set this flag to use t-sne instead of umap.
+
+
 
 _umap_
 
@@ -69,6 +72,10 @@ After running the graph creation script (`gm.py`), the revisualisation script (`
 `-d`, `--dark`, darkmode graph
 
 `--svg`, set this flag to also create an svg file
+
+
+
+Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 ---
 
