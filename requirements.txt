@@ -1,6 +1,6 @@
 networkx
 node2vec
 scikit-learn
-umap
+umap-learn
 seaborn
 infomap
