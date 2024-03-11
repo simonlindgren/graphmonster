@@ -35,6 +35,7 @@ _Node2Vec_
 python reduce.py <parameters>
 ```
 
+### Parameters
 _umap (default)_
 
 `-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 4.
@@ -53,23 +54,15 @@ _t-sne_
 
 _Start with low `x` and `i` and increase gradually to find sweet spot_.
 
----
-
-#### Labelling communities
-
-When running `gm.py`, the files `commlabels.txt` and `gm.csv` will be created. The community info in the csv can be used, depending on the character of your data, to look up more info about the nodes as input to setting the labels in the txt.
-
-
----
-
-#### Revisualise function
+## Third step: Tweaks
 
 ```
-python gm_rv.py <parameters>
+python tweak.py <parameters>
 ```
 
-After running the graph creation script (`gm.py`), the revisualisation script (`gm_rv.py`) can be run iteratively to tweak the visualisation. This may include editing `commlabels.txt`, and alterations of the following parameters:
+When running `gm.py`, the files `commlabels.txt` and `gm.csv` will be created. The community info in the csv can be used, depending on the character of your data, to look up more info about the nodes as input to setting the labels in the txt. Running `tweak.py` will use the labels.
 
+### Parameters
 `-s`, `--size`, nodesize will be (log degree * size), default = 60.
 
 `-a`, `--alpha`, alpha opacity of nodes, default = 0.6.
@@ -84,7 +77,7 @@ Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
 
 ---
 
-### Prerequisites
+## Prerequisites
 
 Run the following command to install package dependencies:
 
