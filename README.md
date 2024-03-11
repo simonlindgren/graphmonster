@@ -73,7 +73,7 @@ When running `gm.py`, the files `commlabels.txt` and `gm.csv` will be created. T
 
 
 
-Files for the visualisation(`gm.svg` and `gm.pdf`) will be created.
+_Files for the visualisation(`gm.png`/`gm.svg`) will be created._
 
 ---
 
