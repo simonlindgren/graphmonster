@@ -1,6 +1,6 @@
 # GRAPHMONSTER
 
-Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings, and umap (or t-sne) for reducing dimensionality. In the resulting visualised graph, nodes are coloured by community (Infomap algorithm) and sized by degree.
+Graphmonster will take an edgelist, create a graph, and remove noise from it. It then uses Node2Vec to find node embeddings. It uses umap or t-sne for reducing dimensionality. In the resulting visualised graph, nodes are coloured by community (Infomap algorithm) and sized by degree.
 
 ## First step: Remove noise and train embeddings
 
