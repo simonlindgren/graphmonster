@@ -9,6 +9,7 @@ python train.py <parameters>
 ```
 
 ### Parameters
+_Input_
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
@@ -32,9 +33,13 @@ _Node2Vec_
 
 `--tsne`, set this flag to use t-sne instead of umap.
 
+## Second step: Dimensionality reduction and initial plot
 
+```
+python reduce.py <parameters>
+```
 
-_umap_
+_umap (default)_
 
 `-n`, `--nneigh`, similar to perplexity, recommended 5-50 (must be >1), default = 10.
 
@@ -43,6 +48,7 @@ _umap_
 `--mtrc`, metric (default = euclidean)
 
 _t-sne_
+`--tsne`, set this flag to use t-sne instead of umap
 
 `-x`, `--perp`, perplexity for t-sne, recommended 5-50, default = 20.
 
