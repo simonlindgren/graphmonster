@@ -64,7 +64,7 @@ _Start with low `x` and `i` and increase gradually to find sweet spot_.
 python tweak.py <parameters>
 ```
 
-When running `gm.py`, the files `commlabels.txt` and `gm.csv` will be created. The community info in the csv can be used, depending on the character of your data, to look up more info about the nodes as input to setting the labels in the txt. Running `tweak.py` will use the labels.
+When running `train.py`, the files `commlabels.txt` and `gm.csv` will be created. The community info in the csv can be used, depending on the character of your data, to look up more info about the nodes as input to setting the labels in the txt. Running `tweak.py` will use the labels.
 
 ### Parameters
 `-s`, `--size`, nodesize will be (log degree * size), default = 60.
