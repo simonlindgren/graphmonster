@@ -13,6 +13,10 @@ _Input_
 
 `-f`, `--file`, name of edgelist file with one space-separated edge per line (e.g. `0 2` or `pig owl`), default = edgelist.txt
 
+_Graph filtering_
+
+`-t`, `--threshold`, minimum edge weight threshold for filtering (edges with weight < threshold will be removed), default = 2.
+
 _Clustering_
 
 `-k`, `--keep`, max number of communities to keep, default = 16.
@@ -75,6 +79,14 @@ When running `train.py`, the files `commlabels.txt` and `gm.csv` will be created
 
 `--svg`, set this flag to also create an svg file
 
+_Labeling_
+
+`-l`, `--labels`, space-separated list of node names to label (e.g. `-l "node1" "node2" "node3"`)
+
+`--all-labels`, set this flag to label all nodes
+
+`--fontsize`, font size for labels, default = 10
+
 
 
 _Files for the visualisation(`gm.png`/`gm.svg`) will be created._
@@ -84,6 +96,8 @@ _Files for the visualisation(`gm.png`/`gm.svg`) will be created._
 ---
 
 ## Prerequisites
+
+Recommended: A conda environment with Python 3.8.
 
 Run the following command to install package dependencies:
 

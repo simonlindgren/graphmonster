@@ -7,6 +7,7 @@ from node2vec import Node2Vec
 
 from sklearn.manifold import TSNE
 import sys
+import os
 
 # silence NumbaPerformanceWarning
 import warnings
@@ -16,7 +17,7 @@ import pickle
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--file", default = "edgelist.txt")
+parser.add_argument("-f", "--file", required=True, help="Path to the edgelist file")
 parser.add_argument("-k", "--keep", default = 16)
 parser.add_argument("-l", "--length", default = 16)
 parser.add_argument("-n", "--num", default=10)
@@ -43,6 +44,12 @@ print(logo)
 
 
 def main():
+    # Check if file exists
+    if not os.path.exists(args.file):
+        print(f"\n❌ Error: File '{args.file}' not found!")
+        print("Please provide a valid edgelist file using: python train.py -f <filename>")
+        sys.exit(1)
+    
     graphcrunch(args.file)
     infomap_clu(G)
     communityrip(G,args.keep)
@@ -75,8 +82,8 @@ def graphcrunch(file):
     numedges = len(G.edges())
     print("----- There are " + str(numnodes) + " nodes and " + str(numedges) + " edges in the graph.")
     
-    print("----- Removing edges with a weight < 10")
-    threshold = 10
+    print("----- Removing edges with a weight < 2")
+    threshold = 2
     
     removeedges = []
     for s,t,data in G.edges(data=True):
